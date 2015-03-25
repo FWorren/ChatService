@@ -43,8 +43,6 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 
             valid_chars = set(string.ascii_letters + string.digits)
 
-
-
             if self.username==None and client_request=='login':
                 #check if not in use by someone else and valid
                 if users.count(self.username)==0 and set(client_content) <= valid_chars:
@@ -61,7 +59,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 response = 'info'
                 return
             elif self.username!=None and client_request=='msg':
-                history.append([self.username, client_content])
+                history.append([timestamp, self.username, client_content])
                 response = 'message'
                 server_content = client_content 
             elif self.username!=None and client_request=='names':
@@ -79,10 +77,6 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             print 'payload:', payload
 
             self.connection.sendall(payload)
-
-
-
-    
 
         # TODO: Add handling of received payload from client
 

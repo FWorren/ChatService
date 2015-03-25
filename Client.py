@@ -23,7 +23,7 @@ class Client:
         receiver.start()
 
         while True:
-            msg = raw_input('Client: ')
+            msg = raw_input()
 
             msg = msg.split()
 
@@ -58,12 +58,12 @@ class Client:
         server_response =  json.loads(message)['response']
         server_content =  json.loads(message)['content']
         if server_response == "message":
-            print server_timestamp," ", server_sender, ": ", server_content
+            print server_timestamp, server_sender, ":", server_content
         elif server_response == "info":
             print server_content
         elif server_response == "history":
             for i in range(len(server_content)):
-                print server_content[i][0], ": ", server_content[i][1]
+                print server_content[i][0], server_content[i][1], ":", server_content[i][2]
         else:
             print "The server returned an error: ", server_content
 
