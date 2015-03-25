@@ -23,7 +23,5 @@ class MessageReceiver(Thread):
         # TODO: Make MessageReceiver receive and handle payloads
         while True:
             received_string = self.connection.recv(4096).strip()
-            print received_string
             if len(received_string) != 0:
                 self.listener.receive_message(received_string)
-

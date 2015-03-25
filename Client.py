@@ -57,15 +57,15 @@ class Client:
         server_sender =  json.loads(message)['sender']
         server_response =  json.loads(message)['response']
         server_content =  json.loads(message)['content']
-        if server_response == "Message":
-            print server_timestamp," ", server_sender, ": ", server_content, "\n"
-        elif server_response == "Info":
-            print server_content, "\n"
-        elif server_response == "History":
+        if server_response == "message":
+            print server_timestamp," ", server_sender, ": ", server_content
+        elif server_response == "info":
+            print server_content
+        elif server_response == "history":
             for i in range(len(server_content)):
-                print server_content[i][0], ": ", server_content[i][1], "\n"
+                print server_content[i][0], ": ", server_content[i][1]
         else:
-            print "The server returned an error: ", server_content, "\n"
+            print "The server returned an error: ", server_content
 
     def send_payload(self, data):
         # TODO: Handle sending of a payload

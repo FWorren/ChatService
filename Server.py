@@ -50,28 +50,28 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 if users.count(self.username)==0 and set(client_content) <= valid_chars:
                     self.username = client_content
                     users.append(self.username)
-                    response = 'History'
+                    response = 'history'
                     server_content = history
                 else:
                     print 'invalid'
-                    response = 'Error'
+                    response = 'error'
                     server_content = 'Invalid username, valid character a-z, A-Z, 0-9'
             elif self.username!=None and client_request=='logout':
                 users.delete(self.username)
-                response = 'Info'
+                response = 'info'
                 return
             elif self.username!=None and client_request=='msg':
                 history.append([self.username, client_content])
-                response = 'Info'
-                server_content = msg 
+                response = 'message'
+                server_content = client_content 
             elif self.username!=None and client_request=='names':
-                response = 'Info'
+                response = 'info'
                 server_content = users
             elif client_request=='help':
-                response = 'Info'
+                response = 'info'
                 server_content = help_msg
             else:
-                response = 'Error'
+                response = 'error'
                 
                     
             payload = json.dumps({'timestamp':timestamp, 'sender':self.username, 'response':response, 'content':server_content})
