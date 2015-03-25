@@ -2,6 +2,8 @@
 import socket, json
 from MessageReceiver import MessageReceiver
 
+from config import alive
+
 class Client:
     """
     This is the chat client class
@@ -22,7 +24,7 @@ class Client:
         receiver = MessageReceiver(self, self.connection)
         receiver.start()
 
-        while True:
+        while alive:
             msg = raw_input()
 
             msg = msg.split()
@@ -60,7 +62,11 @@ class Client:
         if server_response == "message":
             print server_timestamp, server_sender, ":", server_content
         elif server_response == "info":
-            print server_content
+            if server_content == "logout":
+                print "Logging out..."
+                alive = False
+            else:
+                print server_content
         elif server_response == "history":
             for i in range(len(server_content)):
                 print server_content[i][0], server_content[i][1], ":", server_content[i][2]

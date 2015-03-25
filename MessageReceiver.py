@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from threading import Thread
 
+from config import alive
+
 class MessageReceiver(Thread):
     """
     This is the message receiver class. The class inherits Thread, something that
@@ -21,7 +23,7 @@ class MessageReceiver(Thread):
 
     def run(self):
         # TODO: Make MessageReceiver receive and handle payloads
-        while True:
+        while alive:
             received_string = self.connection.recv(4096).strip()
             if len(received_string) != 0:
                 self.listener.receive_message(received_string)
