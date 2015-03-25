@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import SocketServer, json
+import SocketServer, json, string
 from datetime import datetime
 
 users = []
@@ -22,63 +22,64 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         self.port = self.client_address[1]
         self.connection = self.request
 
-        self.connection.settimeout(1.0)
         self.username = None
 
         # Loop that listens for messages from the client
         while True:
-            try:
-                received_string = self.connection.recv(4096).strip()
+            received_string = self.connection.recv(4096).strip()
 
-                timestamp = datetime.now().strftime('%d/%m/%Y-%H:%M:%S')
+            timestamp = datetime.now().strftime('%d/%m/%Y-%H:%M:%S')
 
-                # Default respone
-                response = 'Error'
-                # Default content
-                server_content = help_msg
+            # Default respone
+            response = 'Error'
+            # Default content
+            server_content = help_msg
 
-                client_request =  json.loads(received_string)['request']
-                client_content =  json.loads(received_string)['content']
+            client_request =  json.loads(received_string)['request']
+            client_content =  json.loads(received_string)['content']
 
-                print 'request:', client_request
-                print 'content:', client_content
+            print 'request:', client_request
+            print 'content:', client_content
 
-                if self.username==None and client_request=='login':
+            valid_chars = set(string.ascii_letters + string.digits)
+
+
+
+            if self.username==None and client_request=='login':
+                #check if not in use by someone else and valid
+                if users.count(self.username)==0 and set(client_content) <= valid_chars:
                     self.username = client_content
-                    #check if not in use by someone else
-                    if users.count(self.username)==0:
-                        users.append(self.username)
-                        response = 'History'
-                    else:
-                        response = 'Error'
-                elif self.username!=None and client_request=='logout':
-                    users.delete(self.username)
-                    respone = 'Info'
-                    return
-                elif self.username!=None and client_request=='msg':
-                    history.append([self.username, client_content])
-                    respone = 'Info'
-                    print '{} wrote:'.format(self.ip)
-                    print client_content
-                    print 'history:', history
-                elif self.username!=None and client_request=='names':
-                    respone = 'Info'
-                    for user in users:
-                        print user
-                elif client_request=='help':
-                    response = 'Info'
-                    print help_msg
+                    users.append(self.username)
+                    response = 'History'
+                    server_content = history
                 else:
+                    print 'invalid'
                     response = 'Error'
+                    server_content = 'Invalid username, valid character a-z, A-Z, 0-9'
+            elif self.username!=None and client_request=='logout':
+                users.delete(self.username)
+                response = 'Info'
+                return
+            elif self.username!=None and client_request=='msg':
+                history.append([self.username, client_content])
+                response = 'Info'
+                server_content = msg 
+            elif self.username!=None and client_request=='names':
+                response = 'Info'
+                server_content = users
+            elif client_request=='help':
+                response = 'Info'
+                server_content = help_msg
+            else:
+                response = 'Error'
+                
                     
-                        
-                payload = json.dumps({'timestamp':timestamp, 'sender':self.username, 'response':response, 'content':server_content})
+            payload = json.dumps({'timestamp':timestamp, 'sender':self.username, 'response':response, 'content':server_content})
 
-                print 'payload:', payload
+            print 'payload:', payload
 
+            self.connection.sendall(payload)
 
-            except self.connection.timeout:
-                print 'timeout'
 
 
     
