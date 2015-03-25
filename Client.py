@@ -17,12 +17,12 @@ class Client:
         self.host = host
         self.server_port = server_port
 
-        receiver = MessageReceiver(self, self.connection)
-
         self.run()
 
+        receiver = MessageReceiver(self, self.connection)
+        receiver.start()
+
         while True:
-                
             msg = raw_input('Client: ')
 
             msg = msg.split()
@@ -35,10 +35,9 @@ class Client:
 
             payload = json.dumps({'request':request, 'content':content})
 
-
             self.send_payload(payload)
 
-
+        receiver.join()
         self.disconnect()
 
         # TODO: Finish init process with necessary code
@@ -54,7 +53,19 @@ class Client:
 
     def receive_message(self, message):
         # TODO: Handle incoming message
-        pass
+        server_timestamp =  json.loads(message)['timestamp']
+        server_sender =  json.loads(message)['sender']
+        server_response =  json.loads(message)['response']
+        server_content =  json.loads(message)['content']
+        if server_response == "Message":
+            print server_timestamp," ", server_sender, ": ", server_content, "\n"
+        elif server_response == "Info":
+            print server_content, "\n"
+        elif server_response == "History":
+            for i in range(len(server_content)):
+                print server_content[i][0], ": ", server_content[i][1], "\n"
+        else:
+            print "The server returned an error: ", server_content, "\n"
 
     def send_payload(self, data):
         # TODO: Handle sending of a payload
